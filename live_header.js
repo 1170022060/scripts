@@ -1,9 +1,6 @@
-let headers = $request.headers || {};
-
-headers["Referer"] = "https://d.f2d6.co/#/live/512/";
-headers["referer"] = "https://d.f2d6.co/#/live/512/";
-headers["User-Agent"] = "Mozilla/5.0";
-headers["user-agent"] = "Mozilla/5.0";
-
-console.log("QX header injected => " + $request.url);
-$done({ headers });
+let h = $request.headers || {};
+h["X-QX-Debug"] = "injected";
+h["Referer"] = "https://d.f2d6.co/#/live/512/";
+h["User-Agent"] = "Mozilla/5.0";
+console.log("QX injected => " + $request.url);
+$done({ headers: h });
