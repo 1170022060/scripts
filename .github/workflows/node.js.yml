@@ -1,12 +1,11 @@
-name: Run Node Script
+name: Run JS
 
 on:
 workflow_dispatch:
 
 jobs:
-run-script:
+run:
 runs-on: ubuntu-latest
-
 steps:
 - name: Checkout
 uses: actions/checkout@v4
@@ -20,7 +19,6 @@ node-version: 20
 run: |
 pwd
 ls -la
-find . -maxdepth 3 -type f
 
 - name: Run script
 run: node m3u8_probe_linux.js
