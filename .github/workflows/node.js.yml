@@ -23,4 +23,4 @@ ls -la
 find . -maxdepth 3 -type f
 
 - name: Run script
-run: node m3u8probenode.js
+run: node m3u8_probe_linux.js
