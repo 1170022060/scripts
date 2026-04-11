@@ -11,9 +11,9 @@ const defaults = {
   baseUrlTemplate: "https://zapi.8-8.tv/live/{0}/index.m3u8",
   fixedPrefix: "1775517",
   suffixWidth: 6,
-  startSuffix: 827600,
-  endSuffix: 827610,
-  concurrency: 2,
+  startSuffix: 900000,
+  endSuffix: 950000,
+  concurrency: 1,
   delayMs: 200,
   timeoutSec: 5,
   outputCsv: path.join(process.cwd(), "m3u8_probe_results_linux.csv"),
@@ -192,14 +192,18 @@ function createLogger(logFile) {
     fs.mkdirSync(path.dirname(logFile), { recursive: true });
   }
 
-  return function log(level, message) {
+  return function log(level, message, options = {}) {
+    const { consoleOutput = true } = options;
     const line = `[${formatLocalDateTime(new Date())}] [${level}] ${message}`;
-    if (level === "WARN") {
-      console.warn(line);
-    } else if (level === "ERROR") {
-      console.error(line);
-    } else {
-      console.log(line);
+
+    if (consoleOutput) {
+      if (level === "WARN") {
+        console.warn(line);
+      } else if (level === "ERROR") {
+        console.error(line);
+      } else {
+        console.log(line);
+      }
     }
 
     if (logFile) {
@@ -444,7 +448,8 @@ async function main() {
 
   log(
     "INFO",
-    `Starting probe. Range=${options.startSuffix}-${options.endSuffix} Total=${totalCount} Concurrency=${options.concurrency} DelayMs=${options.delayMs} TimeoutSec=${options.timeoutSec} Output=${options.outputCsv}`
+    `Starting probe. Range=${options.startSuffix}-${options.endSuffix} Total=${totalCount} Concurrency=${options.concurrency} DelayMs=${options.delayMs} TimeoutSec=${options.timeoutSec} Output=${options.outputCsv}`,
+    { consoleOutput: false }
   );
 
   function logProgress(force = false) {
@@ -464,7 +469,8 @@ async function main() {
       "INFO",
       `Progress ${completedCount}/${totalCount} (${percent}%) Available=${availableCount} Stored=${storedCount} InFlight=${inFlight} Elapsed=${formatElapsedMs(
         Date.now() - startedAt
-      )}`
+      )}`,
+      { consoleOutput: false }
     );
   }
 
@@ -496,11 +502,14 @@ async function main() {
         availableCount += 1;
         log("INFO", `AVAILABLE ${streamId} ${url}`);
       } else if (probeResult.reason === "rate_limited") {
-        log("WARN", `Rate limited at ${streamId} ${url}`);
+        log("WARN", `Rate limited at ${streamId} ${url}`, {
+          consoleOutput: false,
+        });
       } else if (options.verbose) {
         log(
           "INFO",
-          `Checked ${streamId} Status=${probeResult.statusCode || "ERR"} Reason=${probeResult.reason}`
+          `Checked ${streamId} Status=${probeResult.statusCode || "ERR"} Reason=${probeResult.reason}`,
+          { consoleOutput: false }
         );
       }
 
@@ -514,7 +523,9 @@ async function main() {
 
       if (probeResult.reason === "rate_limited" && options.stopOn429) {
         stopRequested = true;
-        log("WARN", "Stopping because --stop-on-429 was set.");
+        log("WARN", "Stopping because --stop-on-429 was set.", {
+          consoleOutput: false,
+        });
       }
 
       if (!stopRequested && options.delayMs > 0) {
