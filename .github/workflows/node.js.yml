@@ -2,8 +2,6 @@ name: Run Node Script
 
 on:
 workflow_dispatch:
-schedule:
-- cron: '0    ' # 每小时执行一次，可改
 
 jobs:
 run-script:
@@ -18,5 +16,11 @@ uses: actions/setup-node@v4
 with:
 node-version: 20
 
+- name: Show files
+run: |
+pwd
+ls -la
+find . -maxdepth 3 -type f
+
 - name: Run script
-run: node m3u8_probe.node.js
+run: node m3u8probenode.js
