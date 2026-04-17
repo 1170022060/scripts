@@ -11,7 +11,7 @@ const defaults = {
   baseUrlTemplate: "https://zapi.8-8.tv/live/{0}/index.m3u8",
   fixedPrefix: "1775517",
   suffixWidth: 6,
-  startSuffix:810000,
+  startSuffix:819000,
   endSuffix:820000,
   concurrency: 1,
   delayMs: 200,
